@@ -78,13 +78,7 @@
           </div>
           <div>
             <h2>Форма за запитване</h2>
-            <form
-              class="contact-form"
-              action="mailto:contact@example.com"
-              method="post"
-              enctype="text/plain"
-              data-contact-form-email
-            >
+            <form class="contact-form" data-contact-form>
               <div class="form-group">
                 <label for="name">Име</label>
                 <input type="text" id="name" name="Име" required />
@@ -114,12 +108,12 @@
                         name="locationMode"
                         value="map"
                       />
-                      Google Maps
+                      Карта
                     </label>
                   </div>
                 </div>
 
-                <p class="gmaps-warning" hidden></p>
+                <p class="map-warning" hidden></p>
 
                 <div class="location-text-wrap">
                   <div class="form-group">
@@ -130,16 +124,19 @@
 
                 <div class="location-map-wrap" hidden>
                   <div class="form-group">
-                    <label for="gmaps-search">Търсене в картата</label>
-                    <input
-                      class="gmaps-search"
-                      id="gmaps-search"
-                      type="text"
-                      placeholder="Напр. ул. Александровска, Бургас"
-                      autocomplete="off"
-                    />
+                    <label>Търсене на адрес</label>
+                    <div class="map-search-wrap">
+                      <input
+                        class="map-search"
+                        type="text"
+                        placeholder="Напр. ул. Александровска, Бургас"
+                        autocomplete="off"
+                      />
+                      <button type="button" class="btn btn-outline map-search-btn">Търси</button>
+                    </div>
                   </div>
-                  <div class="gmaps-map" id="gmaps-map"></div>
+                  <div class="map-container"></div>
+                  <p class="map-address-display" hidden></p>
                   <input type="hidden" name="Локация (карта)" value="" />
                   <input type="hidden" name="Lat" value="" />
                   <input type="hidden" name="Lng" value="" />
@@ -150,6 +147,7 @@
                 <textarea id="message" name="Съобщение" rows="4" required></textarea>
               </div>
               <button type="submit" class="btn btn-primary">Изпрати запитване</button>
+              <div class="form-status" hidden></div>
             </form>
           </div>
         </div>

@@ -1,5 +1,5 @@
-// Google Maps picker for contact forms (optional).
-// Requires SITE_CONTACT.googleMapsApiKey to be set in config.js.
+// OpenStreetMap location picker using Leaflet (no API key required).
+// Geocoding via Nominatim (free, open-source).
 
 (function () {
   function $(sel, root) {
@@ -8,7 +8,6 @@
   function $all(sel, root) {
     return Array.from((root || document).querySelectorAll(sel));
   }
-
   function show(el) {
     if (el) el.hidden = false;
   }
@@ -17,13 +16,108 @@
   }
 
   function setWarning(section, message) {
-    var warning = $(".gmaps-warning", section);
+    var warning = $(".map-warning", section);
     if (!warning) return;
     warning.textContent = message;
     show(warning);
   }
 
-  function initToggle(section) {
+  function clearWarning(section) {
+    var warning = $(".map-warning", section);
+    if (!warning) return;
+    warning.textContent = "";
+    hide(warning);
+  }
+
+  var leafletReady = false;
+  var leafletLoading = false;
+  var onReadyQueue = [];
+
+  function loadLeaflet(cb) {
+    if (leafletReady && window.L) {
+      cb();
+      return;
+    }
+    onReadyQueue.push(cb);
+    if (leafletLoading) return;
+    leafletLoading = true;
+
+    var css = document.createElement("link");
+    css.rel = "stylesheet";
+    css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+    document.head.appendChild(css);
+
+    var js = document.createElement("script");
+    js.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    js.onload = function () {
+      leafletReady = true;
+      leafletLoading = false;
+      onReadyQueue.splice(0).forEach(function (fn) {
+        fn();
+      });
+    };
+    js.onerror = function () {
+      leafletLoading = false;
+      onReadyQueue.splice(0).forEach(function (fn) {
+        fn(new Error("load failed"));
+      });
+    };
+    setTimeout(function () {
+      if (!leafletReady && leafletLoading) {
+        leafletLoading = false;
+        onReadyQueue.splice(0).forEach(function (fn) {
+          fn(new Error("timeout"));
+        });
+      }
+    }, 12000);
+    document.head.appendChild(js);
+  }
+
+  function reverseGeocode(lat, lng, cb) {
+    fetch(
+      "https://nominatim.openstreetmap.org/reverse?lat=" +
+        lat +
+        "&lon=" +
+        lng +
+        "&format=json&accept-language=bg"
+    )
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (d) {
+        cb(d.display_name || null);
+      })
+      .catch(function () {
+        cb(null);
+      });
+  }
+
+  function forwardGeocode(query, cb) {
+    fetch(
+      "https://nominatim.openstreetmap.org/search?q=" +
+        encodeURIComponent(query) +
+        "&format=json&countrycodes=bg&limit=1&accept-language=bg"
+    )
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (results) {
+        if (results && results.length) {
+          cb(null, {
+            lat: parseFloat(results[0].lat),
+            lng: parseFloat(results[0].lon),
+            name: results[0].display_name,
+          });
+        } else {
+          cb(new Error("not found"));
+        }
+      })
+      .catch(function () {
+        cb(new Error("error"));
+      });
+  }
+
+  function initPicker(section) {
     var radioText = $(".location-radio-text", section);
     var radioMap = $(".location-radio-map", section);
     var textWrap = $(".location-text-wrap", section);
@@ -34,6 +128,12 @@
       if (mode === "map") {
         hide(textWrap);
         show(mapWrap);
+        var mc = $(".map-container", section);
+        if (mc && mc.__leafletMap) {
+          setTimeout(function () {
+            mc.__leafletMap.invalidateSize();
+          }, 150);
+        }
       } else {
         show(textWrap);
         hide(mapWrap);
@@ -46,157 +146,123 @@
     radioMap.addEventListener("change", function () {
       if (radioMap.checked) {
         applyMode("map");
-        ensureMapLoaded(section);
+        ensureMap(section);
       }
     });
 
     applyMode(radioText.checked ? "text" : "map");
-    if (radioMap.checked) ensureMapLoaded(section);
+    if (radioMap.checked) ensureMap(section);
   }
 
-  var googleMapsLoading = false;
-  var googleMapsLoaded = false;
-  var pendingSections = [];
-
-  window.__initContactMap = function () {
-    googleMapsLoaded = true;
-    googleMapsLoading = false;
-    pendingSections.splice(0).forEach(function (section) {
-      tryInitMapInSection(section);
-    });
-  };
-
-  function ensureMapLoaded(section) {
-    if (googleMapsLoaded) {
-      tryInitMapInSection(section);
-      return;
-    }
-
-    pendingSections.push(section);
-
-    if (googleMapsLoading) return;
-    googleMapsLoading = true;
-
-    var apiKey = window.SITE_CONTACT && window.SITE_CONTACT.googleMapsApiKey;
-    if (!apiKey) {
-      googleMapsLoading = false;
-      setWarning(
-        section,
-        "Google Maps не е наличен (липсва API ключ). Моля, използвайте текстовото поле за локация."
-      );
-      // Force switch to text
-      var radioText = $(".location-radio-text", section);
-      if (radioText) radioText.checked = true;
-      var textWrap = $(".location-text-wrap", section);
-      var mapWrap = $(".location-map-wrap", section);
-      show(textWrap);
-      hide(mapWrap);
-      return;
-    }
-
-    var script = document.createElement("script");
-    script.async = true;
-    script.defer = true;
-    script.src =
-      "https://maps.googleapis.com/maps/api/js?key=" +
-      encodeURIComponent(apiKey) +
-      "&libraries=places&callback=__initContactMap";
-
-    script.onerror = function () {
-      googleMapsLoading = false;
-      googleMapsLoaded = false;
-      pendingSections.splice(0).forEach(function (sec) {
+  function ensureMap(section) {
+    loadLeaflet(function (err) {
+      if (err) {
         setWarning(
-          sec,
-          "Google Maps не можа да се зареди. Възможно е проблем с връзката/блокиране от разширение. Моля, използвайте текстовото поле."
+          section,
+          "Картата не можа да се зареди. Моля, използвайте текстовото поле за адрес."
         );
-        var radioText = $(".location-radio-text", sec);
-        if (radioText) radioText.checked = true;
-        var textWrap = $(".location-text-wrap", sec);
-        var mapWrap = $(".location-map-wrap", sec);
-        show(textWrap);
-        hide(mapWrap);
-      });
-    };
-
-    // timeout fallback
-    setTimeout(function () {
-      if (googleMapsLoaded) return;
-      script.onerror && script.onerror();
-    }, 8000);
-
-    document.head.appendChild(script);
+        var rt = $(".location-radio-text", section);
+        if (rt) {
+          rt.checked = true;
+          rt.dispatchEvent(new Event("change"));
+        }
+        return;
+      }
+      buildMap(section);
+    });
   }
 
-  function tryInitMapInSection(section) {
-    if (!googleMapsLoaded || !window.google || !window.google.maps) return;
-    var mapEl = $(".gmaps-map", section);
-    var searchEl = $(".gmaps-search", section);
-    var hiddenLat = $("input[name=\"Lat\"]", section);
-    var hiddenLng = $("input[name=\"Lng\"]", section);
-    var hiddenMapText = $("input[name=\"Локация (карта)\"]", section);
-    if (!mapEl || !searchEl || !hiddenLat || !hiddenLng || !hiddenMapText) return;
+  function buildMap(section) {
+    if (!window.L) return;
+    var mapEl = $(".map-container", section);
+    if (!mapEl || mapEl.getAttribute("data-init") === "1") return;
+    mapEl.setAttribute("data-init", "1");
 
-    if (mapEl.getAttribute("data-map-initialized") === "1") return;
-    mapEl.setAttribute("data-map-initialized", "1");
+    var searchInput = $(".map-search", section);
+    var searchBtn = $(".map-search-btn", section);
+    var addrDisplay = $(".map-address-display", section);
+    var hLat = $('input[name="Lat"]', section);
+    var hLng = $('input[name="Lng"]', section);
+    var hText = $('input[name="Локация (карта)"]', section);
 
-    var center = { lat: 42.5048, lng: 27.4626 }; // Burgas
-    var map = new google.maps.Map(mapEl, {
-      center: center,
-      zoom: 12,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false
-    });
-    var marker = new google.maps.Marker({
-      map: map,
-      position: center,
-      draggable: true
-    });
+    var center = [42.5048, 27.4626]; // Burgas
+    var map = L.map(mapEl).setView(center, 12);
+    mapEl.__leafletMap = map;
 
-    function updateFromLatLng(latLng, label) {
-      var lat = typeof latLng.lat === "function" ? latLng.lat() : latLng.lat;
-      var lng = typeof latLng.lng === "function" ? latLng.lng() : latLng.lng;
-      hiddenLat.value = String(lat);
-      hiddenLng.value = String(lng);
-      hiddenMapText.value = label || "Избрана точка (" + lat.toFixed(6) + ", " + lng.toFixed(6) + ")";
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(map);
+
+    var marker = L.marker(center, { draggable: true }).addTo(map);
+
+    function update(lat, lng, label) {
+      if (hLat) hLat.value = String(lat);
+      if (hLng) hLng.value = String(lng);
+      var txt =
+        label ||
+        "Избрана точка (" + lat.toFixed(5) + ", " + lng.toFixed(5) + ")";
+      if (hText) hText.value = txt;
+      if (addrDisplay) {
+        addrDisplay.textContent = txt;
+        show(addrDisplay);
+      }
     }
 
-    updateFromLatLng(center, "Начална точка (Бургас)");
+    update(center[0], center[1], "Бургас (начална точка)");
 
-    map.addListener("click", function (e) {
-      marker.setPosition(e.latLng);
-      updateFromLatLng(e.latLng);
-    });
-    marker.addListener("dragend", function (e) {
-      updateFromLatLng(e.latLng);
+    map.on("click", function (e) {
+      marker.setLatLng(e.latlng);
+      update(e.latlng.lat, e.latlng.lng);
+      reverseGeocode(e.latlng.lat, e.latlng.lng, function (name) {
+        if (name) update(e.latlng.lat, e.latlng.lng, name);
+      });
     });
 
-    if (google.maps.places && google.maps.places.Autocomplete) {
-      var autocomplete = new google.maps.places.Autocomplete(searchEl, {
-        fields: ["geometry", "formatted_address", "name"],
-        componentRestrictions: { country: ["bg"] }
+    marker.on("dragend", function () {
+      var p = marker.getLatLng();
+      update(p.lat, p.lng);
+      reverseGeocode(p.lat, p.lng, function (name) {
+        if (name) update(p.lat, p.lng, name);
       });
-      autocomplete.addListener("place_changed", function () {
-        var place = autocomplete.getPlace();
-        if (!place || !place.geometry || !place.geometry.location) return;
-        map.panTo(place.geometry.location);
-        map.setZoom(15);
-        marker.setPosition(place.geometry.location);
-        var label =
-          place.formatted_address || place.name || searchEl.value || "Избрана локация";
-        updateFromLatLng(place.geometry.location, label);
+    });
+
+    function doSearch() {
+      if (!searchInput) return;
+      var q = searchInput.value.trim();
+      if (!q) return;
+      clearWarning(section);
+      forwardGeocode(q, function (err, result) {
+        if (err) {
+          setWarning(
+            section,
+            "Адресът не беше намерен. Опитайте с по-точен адрес или изберете точка на картата."
+          );
+          return;
+        }
+        var ll = L.latLng(result.lat, result.lng);
+        map.setView(ll, 16);
+        marker.setLatLng(ll);
+        update(result.lat, result.lng, result.name);
       });
-    } else {
-      setWarning(
-        section,
-        "Търсенето в картата не е налично (Places). Можете да изберете точка с клик върху картата или да използвате текстовото поле."
-      );
     }
+
+    if (searchBtn) searchBtn.addEventListener("click", doSearch);
+    if (searchInput)
+      searchInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          doSearch();
+        }
+      });
+
+    setTimeout(function () {
+      map.invalidateSize();
+    }, 200);
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    $all(".location-picker").forEach(initToggle);
+    $all(".location-picker").forEach(initPicker);
   });
 })();
-
