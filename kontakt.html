@@ -9,7 +9,7 @@
       name="description"
       content="Свържете се с Монтаж Мебели Бургас за оферта за сглобяване и монтаж на мебели в Бургас и региона."
     />
-    <link rel="canonical" href="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/kontakt.html" />
+    <link rel="canonical" href="https://mvatanasov18.github.io/dido-site-mebeli-simple/kontakt.html" />
     <meta property="og:title" content="Контакт | Сглобяване на мебели Бургас" />
     <meta
       property="og:description"
@@ -18,7 +18,7 @@
     <meta property="og:type" content="website" />
     <meta
       property="og:url"
-      content="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/kontakt.html"
+      content="https://mvatanasov18.github.io/dido-site-mebeli-simple/kontakt.html"
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -78,13 +78,7 @@
           </div>
           <div>
             <h2>Форма за запитване</h2>
-            <form
-              class="contact-form"
-              action="mailto:contact@example.com"
-              method="post"
-              enctype="text/plain"
-              data-contact-form-email
-            >
+            <form class="contact-form" data-contact-form>
               <div class="form-group">
                 <label for="name">Име</label>
                 <input type="text" id="name" name="Име" required />
@@ -93,15 +87,67 @@
                 <label for="phone">Телефон</label>
                 <input type="tel" id="phone" name="Телефон" required />
               </div>
-              <div class="form-group">
-                <label for="location">Населено място</label>
-                <input type="text" id="location" name="Населено място" />
+              <div class="location-picker">
+                <div class="form-group">
+                  <label>Локация</label>
+                  <div class="location-mode">
+                    <label>
+                      <input
+                        class="location-radio-text"
+                        type="radio"
+                        name="locationMode"
+                        value="text"
+                        checked
+                      />
+                      Текст
+                    </label>
+                    <label>
+                      <input
+                        class="location-radio-map"
+                        type="radio"
+                        name="locationMode"
+                        value="map"
+                      />
+                      Карта
+                    </label>
+                  </div>
+                </div>
+
+                <p class="map-warning" hidden></p>
+
+                <div class="location-text-wrap">
+                  <div class="form-group">
+                    <label for="location">Населено място / адрес (текст)</label>
+                    <input type="text" id="location" name="Населено място" />
+                  </div>
+                </div>
+
+                <div class="location-map-wrap" hidden>
+                  <div class="form-group">
+                    <label>Търсене на адрес</label>
+                    <div class="map-search-wrap">
+                      <input
+                        class="map-search"
+                        type="text"
+                        placeholder="Напр. ул. Александровска, Бургас"
+                        autocomplete="off"
+                      />
+                      <button type="button" class="btn btn-outline map-search-btn">Търси</button>
+                    </div>
+                  </div>
+                  <div class="map-container"></div>
+                  <p class="map-address-display" hidden></p>
+                  <input type="hidden" name="Локация (карта)" value="" />
+                  <input type="hidden" name="Lat" value="" />
+                  <input type="hidden" name="Lng" value="" />
+                </div>
               </div>
               <div class="form-group">
                 <label for="message">Описание на мебелите / линк към продукт</label>
                 <textarea id="message" name="Съобщение" rows="4" required></textarea>
               </div>
               <button type="submit" class="btn btn-primary">Изпрати запитване</button>
+              <div class="form-status" hidden></div>
             </form>
           </div>
         </div>
@@ -122,6 +168,7 @@
 
     <script src="config.js"></script>
     <script src="scripts.js"></script>
+    <script src="maps.js"></script>
   </body>
 </html>
 

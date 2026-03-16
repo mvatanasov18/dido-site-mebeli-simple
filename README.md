@@ -18,6 +18,21 @@
 
 Редактирайте **само** файла `config.js`. Телефонът и имейлът там се използват на всички страници (връзки, форма за контакт и JSON-LD за търсачки). Линковете към социални мрежи са в `kontakt.html` и се променят там при нужда.
 
+## Google Maps в контакт формата (по избор)
+
+Формата има 2 начина за локация:
+- **Текст** (винаги налично)
+- **Google Maps** (карта + търсене + избор на точка)
+
+За да работи Google Maps, трябва API ключ:
+
+1. Вземете Google Maps JavaScript API key (и активирайте `Maps JavaScript API` + `Places API`).
+2. Отворете `config.js` и попълнете:
+
+   - `googleMapsApiKey: "ВАШИЯТ_КЛЮЧ"`
+
+Ако картата не може да се зареди (липсва ключ, блокиране от разширение, проблем с връзката), сайтът показва предупреждение и можете да използвате текстовото поле.
+
 ## Как да промените SEO мета данните
 
 1. Отворете `index.html`.
@@ -25,10 +40,13 @@
    - `<title>`
    - `meta name="description"`
    - JSON-LD блока (`application/ld+json`) при нужда.
-3. Заменете `YOUR_GITHUB_USERNAME` и `YOUR_REPOSITORY_NAME` във:
-   - `index.html`, `uslugi.html`, `ceni.html`, `kontakt.html`
-   - `robots.txt`
-   - `sitemap.xml`
+3. URL адресът вече е зададен за този сайт:
+   - `https://mvatanasov18.github.io/dido-site-mebeli-simple/`
+
+Ако копирате проекта в ново GitHub Pages хранилище, тогава заменете URL адреса в:
+- `index.html`, `uslugi.html`, `ceni.html`, `kontakt.html`
+- `robots.txt`
+- `sitemap.xml`
 
 ## Локално тестване
 
