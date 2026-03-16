@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="bg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Контакт | Сглобяване на мебели Бургас</title>
+    <meta
+      name="description"
+      content="Свържете се с Монтаж Мебели Бургас за оферта за сглобяване и монтаж на мебели в Бургас и региона."
+    />
+    <link rel="canonical" href="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/kontakt.html" />
+    <meta property="og:title" content="Контакт | Сглобяване на мебели Бургас" />
+    <meta
+      property="og:description"
+      content="Телефон, имейл и форма за запитване за сглобяване на мебели в Бургас."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/kontakt.html"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="index.html" class="logo">
+          <span class="logo-main">Монтаж Мебели</span>
+          <span class="logo-sub">Бургас</span>
+        </a>
+        <button class="nav-toggle" aria-label="Меню">
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+        </button>
+        <nav class="main-nav">
+          <ul>
+            <li><a href="index.html#hero">Начало</a></li>
+            <li><a href="uslugi.html">Услуги</a></li>
+            <li><a href="ceni.html">Цени</a></li>
+            <li><a href="kontakt.html" class="active">Контакт</a></li>
+          </ul>
+        </nav>
+        <a href="tel:+359888888888" class="header-phone" data-contact-phone>+359 88 888 8888</a>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="page-hero">
+        <div class="container">
+          <h1>Свържете се с нас</h1>
+          <p>
+            Попълнете формата или ни се обадете директно за бърза оферта за
+            сглобяване на мебели в Бургас и региона.
+          </p>
+        </div>
+      </section>
+
+      <section class="section section-alt">
+        <div class="container contact-grid">
+          <div>
+            <h2>Данни за контакт</h2>
+            <ul class="contact-details">
+              <li><strong>Телефон:</strong> <a href="tel:+359888888888" data-contact-phone>+359 88 888 8888</a></li>
+              <li><strong>Email:</strong> <a href="mailto:contact@example.com" data-contact-email>contact@example.com</a></li>
+              <li><strong>Работно време:</strong> Пон–Нед, 9:00–19:00</li>
+              <li><strong>Регион:</strong> Бургас, Поморие, Несебър, Созопол, Айтос, Слънчев бряг и околността</li>
+            </ul>
+            <div class="social-links">
+              <h3>Социални мрежи</h3>
+              <ul>
+                <li><a href="https://facebook.com/company" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+                <li><a href="https://instagram.com/company" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+                <li><a href="https://tiktok.com/@company" target="_blank" rel="noopener noreferrer">TikTok</a></li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <h2>Форма за запитване</h2>
+            <form
+              class="contact-form"
+              action="mailto:contact@example.com"
+              method="post"
+              enctype="text/plain"
+              data-contact-form-email
+            >
+              <div class="form-group">
+                <label for="name">Име</label>
+                <input type="text" id="name" name="Име" required />
+              </div>
+              <div class="form-group">
+                <label for="phone">Телефон</label>
+                <input type="tel" id="phone" name="Телефон" required />
+              </div>
+              <div class="form-group">
+                <label for="location">Населено място</label>
+                <input type="text" id="location" name="Населено място" />
+              </div>
+              <div class="form-group">
+                <label for="message">Описание на мебелите / линк към продукт</label>
+                <textarea id="message" name="Съобщение" rows="4" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Изпрати запитване</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>© <span id="year"></span> Монтаж Мебели Бургас. Всички права запазени.</p>
+        <nav class="footer-nav">
+          <a href="index.html">Начало</a>
+          <a href="uslugi.html">Услуги</a>
+          <a href="ceni.html">Цени</a>
+          <a href="kontakt.html">Контакт</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="scripts.js"></script>
+  </body>
+</html>
+
