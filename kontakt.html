@@ -9,7 +9,7 @@
       name="description"
       content="Свържете се с Монтаж Мебели Бургас за оферта за сглобяване и монтаж на мебели в Бургас и региона."
     />
-    <link rel="canonical" href="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/kontakt.html" />
+    <link rel="canonical" href="https://mvatanasov18.github.io/dido-site-mebeli-simple/kontakt.html" />
     <meta property="og:title" content="Контакт | Сглобяване на мебели Бургас" />
     <meta
       property="og:description"
@@ -18,7 +18,7 @@
     <meta property="og:type" content="website" />
     <meta
       property="og:url"
-      content="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/kontakt.html"
+      content="https://mvatanasov18.github.io/dido-site-mebeli-simple/kontakt.html"
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -93,9 +93,57 @@
                 <label for="phone">Телефон</label>
                 <input type="tel" id="phone" name="Телефон" required />
               </div>
-              <div class="form-group">
-                <label for="location">Населено място</label>
-                <input type="text" id="location" name="Населено място" />
+              <div class="location-picker">
+                <div class="form-group">
+                  <label>Локация</label>
+                  <div class="location-mode">
+                    <label>
+                      <input
+                        class="location-radio-text"
+                        type="radio"
+                        name="locationMode"
+                        value="text"
+                        checked
+                      />
+                      Текст
+                    </label>
+                    <label>
+                      <input
+                        class="location-radio-map"
+                        type="radio"
+                        name="locationMode"
+                        value="map"
+                      />
+                      Google Maps
+                    </label>
+                  </div>
+                </div>
+
+                <p class="gmaps-warning" hidden></p>
+
+                <div class="location-text-wrap">
+                  <div class="form-group">
+                    <label for="location">Населено място / адрес (текст)</label>
+                    <input type="text" id="location" name="Населено място" />
+                  </div>
+                </div>
+
+                <div class="location-map-wrap" hidden>
+                  <div class="form-group">
+                    <label for="gmaps-search">Търсене в картата</label>
+                    <input
+                      class="gmaps-search"
+                      id="gmaps-search"
+                      type="text"
+                      placeholder="Напр. ул. Александровска, Бургас"
+                      autocomplete="off"
+                    />
+                  </div>
+                  <div class="gmaps-map" id="gmaps-map"></div>
+                  <input type="hidden" name="Локация (карта)" value="" />
+                  <input type="hidden" name="Lat" value="" />
+                  <input type="hidden" name="Lng" value="" />
+                </div>
               </div>
               <div class="form-group">
                 <label for="message">Описание на мебелите / линк към продукт</label>
@@ -122,6 +170,7 @@
 
     <script src="config.js"></script>
     <script src="scripts.js"></script>
+    <script src="maps.js"></script>
   </body>
 </html>
 

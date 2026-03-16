@@ -6,4 +6,5 @@ window.SITE_CONTACT = {
   phone: "+359888888888",
   phoneDisplay: "+359 88 888 8888",
   email: "contact@example.com",
+  googleMapsApiKey: ""
 };

@@ -13,7 +13,7 @@
       name="keywords"
       content="сглобяване на мебели Бургас, монтаж на мебели Бургас, монтаж мебели IKEA, сглобяване IKEA мебели, майстор мебели Бургас, монтаж кухня Бургас"
     />
-    <link rel="canonical" href="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/" />
+    <link rel="canonical" href="https://mvatanasov18.github.io/dido-site-mebeli-simple/" />
     <meta property="og:title" content="Сглобяване на мебели Бургас | Монтаж Мебели Бургас" />
     <meta
       property="og:description"
@@ -22,11 +22,11 @@
     <meta property="og:type" content="website" />
     <meta
       property="og:url"
-      content="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/"
+      content="https://mvatanasov18.github.io/dido-site-mebeli-simple/"
     />
     <meta
       property="og:image"
-      content="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/images/hero.jpg"
+      content="https://mvatanasov18.github.io/dido-site-mebeli-simple/images/hero.jpg"
     />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Сглобяване на мебели Бургас | Монтаж Мебели Бургас" />
@@ -41,7 +41,7 @@
         "@type": "HomeAndConstructionBusiness",
         "name": "Монтаж Мебели Бургас",
         "description": "Професионално сглобяване и монтаж на мебели в Бургас и региона.",
-        "url": "https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/",
+        "url": "https://mvatanasov18.github.io/dido-site-mebeli-simple/",
         "telephone": "+359888888888",
         "areaServed": [
           "Burgas",
@@ -361,6 +361,58 @@
                 <label for="phone">Телефон</label>
                 <input type="tel" id="phone" name="Телефон" required />
               </div>
+              <div class="location-picker">
+                <div class="form-group">
+                  <label>Локация</label>
+                  <div class="location-mode">
+                    <label>
+                      <input
+                        class="location-radio-text"
+                        type="radio"
+                        name="locationMode"
+                        value="text"
+                        checked
+                      />
+                      Текст
+                    </label>
+                    <label>
+                      <input
+                        class="location-radio-map"
+                        type="radio"
+                        name="locationMode"
+                        value="map"
+                      />
+                      Google Maps
+                    </label>
+                  </div>
+                </div>
+
+                <p class="gmaps-warning" hidden></p>
+
+                <div class="location-text-wrap">
+                  <div class="form-group">
+                    <label for="location">Населено място / адрес (текст)</label>
+                    <input type="text" id="location" name="Населено място" />
+                  </div>
+                </div>
+
+                <div class="location-map-wrap" hidden>
+                  <div class="form-group">
+                    <label for="gmaps-search">Търсене в картата</label>
+                    <input
+                      class="gmaps-search"
+                      id="gmaps-search"
+                      type="text"
+                      placeholder="Напр. ул. Александровска, Бургас"
+                      autocomplete="off"
+                    />
+                  </div>
+                  <div class="gmaps-map" id="gmaps-map"></div>
+                  <input type="hidden" name="Локация (карта)" value="" />
+                  <input type="hidden" name="Lat" value="" />
+                  <input type="hidden" name="Lng" value="" />
+                </div>
+              </div>
               <div class="form-group">
                 <label for="message">Описание на мебелите / линк към продукт</label>
                 <textarea id="message" name="Съобщение" rows="4" required></textarea>
@@ -386,6 +438,7 @@
 
     <script src="config.js"></script>
     <script src="scripts.js"></script>
+    <script src="maps.js"></script>
   </body>
 </html>
 
